@@ -186,6 +186,7 @@ p{line-height:1.6}
 <h3>Recon</h3>
 <a data-tool="nmap">Nmap</a>
 <a data-tool="harvester">theHarvester</a>
+<a data-tool="feroxbuster">Feroxbuster</a>
 <a data-tool="amass">Amass</a>
 <a data-tool="subfinder">Subfinder</a>
 <a data-tool="httpx">Httpx</a>
@@ -486,6 +487,71 @@ nmap:`<h2>Nmap</h2>
 <pre>nmap -T5 IP</pre>
 <p>Uses aggressive timing (very fast).</p>
 `,
+
+feroxbuster:`<h2>Feroxbuster</h2>
+
+<p>Feroxbuster is a fast, Rust-based forced browsing tool used to discover hidden directories and files on web servers.</p>
+
+<h3>Core Features</h3>
+<ul>
+  <li>Recursive directory discovery</li>
+  <li>HTML & robots.txt link extraction</li>
+  <li>Advanced filtering by status, size, lines, or similarity</li>
+  <li>Proxy support (Burp integration)</li>
+  <li>Multiple output formats (TXT / JSON / CSV)</li>
+</ul>
+
+<h3>Installation</h3>
+
+<pre>sudo apt update && sudo apt install -y feroxbuster</pre>
+<p>Installs Feroxbuster on Kali Linux.</p>
+
+<pre>brew install feroxbuster</pre>
+<p>Installs Feroxbuster on macOS using Homebrew.</p>
+
+<pre>winget install --id=epi052.feroxbuster -e</pre>
+<p>Installs Feroxbuster on Windows using Winget.</p>
+
+<pre>cargo install feroxbuster</pre>
+<p>Builds and installs Feroxbuster from source using Cargo.</p>
+
+<h3>Basic Usage</h3>
+
+<pre>feroxbuster -u https://target.com -w /usr/share/seclists/Discovery/Web-Content/common.txt</pre>
+<p>Performs a basic directory and file discovery scan.</p>
+
+<h3>Extensions & Depth</h3>
+
+<pre>feroxbuster -u https://target.com -w wordlist.txt -x php,html,js -d 6</pre>
+<p>Scans using file extensions and recursive depth.</p>
+
+<h3>Thread Control</h3>
+
+<pre>feroxbuster -u https://target.com -w wordlist.txt -t 20 -L 1</pre>
+<p>Controls the number of threads and recursion level.</p>
+
+<h3>Link Extraction</h3>
+
+<pre>feroxbuster -u https://target.com -w wordlist.txt --extract-links</pre>
+<p>Extracts links from HTML responses and scans them automatically.</p>
+
+<h3>Burp Suite Integration</h3>
+
+<pre>feroxbuster -u http://target --insecure --proxy http://127.0.0.1:8080</pre>
+<p>Sends all requests through Burp Proxy for inspection.</p>
+
+<h3>Output & Reporting</h3>
+
+<pre>feroxbuster -u https://target -w wordlist.txt --output ferox-output.txt</pre>
+<p>Saves scan results to a readable text file.</p>
+
+<pre>feroxbuster -u https://target -w wordlist.txt --json</pre>
+<p>Exports results in JSON format for reporting or automation.</p>
+
+<h3>Ethical Notice</h3>
+<p>Use Feroxbuster only on systems you own or have explicit permission to test. Unauthorized usage is illegal.</p>
+`,
+
 enum4linux:`<h2>Enum4linux</h2>
 
 <p>Enum4linux is an SMB enumeration tool used to extract users, shares, and domain information from Windows and Linux systems.</p>
@@ -1377,23 +1443,6 @@ links.forEach(link=>{
 function setTheme(a1,a2){
   document.documentElement.style.setProperty('--accent',a1);
   document.documentElement.style.setProperty('--accent2',a2);
-}
-</script>
-<script>
-function addTool(key, name, content){
-  // إضافة الأداة
-  tools[key] = content;
-
-  // إضافة زر في القائمة
-  const a = document.createElement('a');
-  a.textContent = name;
-  a.setAttribute('data-tool', key);
-
-  a.onclick = function(){
-    document.getElementById('toolContent').innerHTML = tools[key];
-  };
-
-  document.querySelector('.sidebar').appendChild(a);
 }
 </script>
 
