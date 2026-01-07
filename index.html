@@ -1379,6 +1379,23 @@ function setTheme(a1,a2){
   document.documentElement.style.setProperty('--accent2',a2);
 }
 </script>
+<script>
+function addTool(key, name, content){
+  // إضافة الأداة
+  tools[key] = content;
+
+  // إضافة زر في القائمة
+  const a = document.createElement('a');
+  a.textContent = name;
+  a.setAttribute('data-tool', key);
+
+  a.onclick = function(){
+    document.getElementById('toolContent').innerHTML = tools[key];
+  };
+
+  document.querySelector('.sidebar').appendChild(a);
+}
+</script>
 
 </body>
 </html>
