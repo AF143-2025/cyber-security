@@ -490,66 +490,38 @@ nmap:`<h2>Nmap</h2>
 
 feroxbuster:`<h2>Feroxbuster</h2>
 
-<p>Feroxbuster is a fast, Rust-based forced browsing tool used to discover hidden directories and files on web servers.</p>
-
-<h3>Core Features</h3>
-<ul>
-  <li>Recursive directory discovery</li>
-  <li>HTML & robots.txt link extraction</li>
-  <li>Advanced filtering by status, size, lines, or similarity</li>
-  <li>Proxy support (Burp integration)</li>
-  <li>Multiple output formats (TXT / JSON / CSV)</li>
-</ul>
-
-<h3>Installation</h3>
-
-<pre>sudo apt update && sudo apt install -y feroxbuster</pre>
-<p>Installs Feroxbuster on Kali Linux.</p>
-
-<pre>brew install feroxbuster</pre>
-<p>Installs Feroxbuster on macOS using Homebrew.</p>
-
-<pre>winget install --id=epi052.feroxbuster -e</pre>
-<p>Installs Feroxbuster on Windows using Winget.</p>
-
-<pre>cargo install feroxbuster</pre>
-<p>Builds and installs Feroxbuster from source using Cargo.</p>
-
-<h3>Basic Usage</h3>
-
 <pre>feroxbuster -u https://target.com -w /usr/share/seclists/Discovery/Web-Content/common.txt</pre>
-<p>Performs a basic directory and file discovery scan.</p>
+<p>Basic directory and file discovery scan using a common wordlist.</p>
 
-<h3>Extensions & Depth</h3>
+<pre>feroxbuster -u https://target.com -w wordlist.txt -x php,html,js</pre>
+<p>Scan with specific file extensions.</p>
+
+<pre>feroxbuster -u https://target.com -w wordlist.txt -d 6</pre>
+<p>Recursive scan with depth level 6.</p>
 
 <pre>feroxbuster -u https://target.com -w wordlist.txt -x php,html,js -d 6</pre>
-<p>Scans using file extensions and recursive depth.</p>
+<p>Recursive scan with extensions and depth.</p>
 
-<h3>Thread Control</h3>
-
-<pre>feroxbuster -u https://target.com -w wordlist.txt -t 20 -L 1</pre>
-<p>Controls the number of threads and recursion level.</p>
-
-<h3>Link Extraction</h3>
+<pre>feroxbuster -u https://target.com -w wordlist.txt -t 20</pre>
+<p>Controls the number of threads.</p>
 
 <pre>feroxbuster -u https://target.com -w wordlist.txt --extract-links</pre>
-<p>Extracts links from HTML responses and scans them automatically.</p>
+<p>Extracts and scans links found in HTML responses.</p>
 
-<h3>Burp Suite Integration</h3>
+<pre>feroxbuster -u https://target.com -w wordlist.txt --status-codes 200,301,302</pre>
+<p>Shows only specific HTTP status codes.</p>
 
-<pre>feroxbuster -u http://target --insecure --proxy http://127.0.0.1:8080</pre>
-<p>Sends all requests through Burp Proxy for inspection.</p>
+<pre>feroxbuster -u https://target.com -w wordlist.txt --filter-size 0</pre>
+<p>Filters responses by size.</p>
 
-<h3>Output & Reporting</h3>
+<pre>feroxbuster -u http://target --proxy http://127.0.0.1:8080 --insecure</pre>
+<p>Sends requests through Burp Suite proxy.</p>
 
-<pre>feroxbuster -u https://target -w wordlist.txt --output ferox-output.txt</pre>
-<p>Saves scan results to a readable text file.</p>
+<pre>feroxbuster -u https://target.com -w wordlist.txt --output ferox.txt</pre>
+<p>Saves results to a text file.</p>
 
-<pre>feroxbuster -u https://target -w wordlist.txt --json</pre>
-<p>Exports results in JSON format for reporting or automation.</p>
-
-<h3>Ethical Notice</h3>
-<p>Use Feroxbuster only on systems you own or have explicit permission to test. Unauthorized usage is illegal.</p>
+<pre>feroxbuster -u https://target.com -w wordlist.txt --json</pre>
+<p>Exports scan results in JSON format.</p>
 `,
 
 enum4linux:`<h2>Enum4linux</h2>
